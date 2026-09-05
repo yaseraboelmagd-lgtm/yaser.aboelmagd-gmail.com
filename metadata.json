@@ -1,0 +1,8 @@
+{
+  "name": "Remix Smart Lawyer",
+  "description": "المستشار القانوني الذكي - تحليل المسائل القانونية ومساعد صياغة العقود ومواعيد الجلسات وفقاً للقانون المصري",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
