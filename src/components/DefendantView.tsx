@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Sparkles, Copy, Check, Bookmark, Send, AlertCircle, Gavel } from 'lucide-react';
+import { ShieldCheck, Sparkles, Copy, Check, Bookmark, Send, AlertCircle, Gavel, Printer } from 'lucide-react';
+import { triggerPrintDocument } from '../utils/exportUtils';
 
 interface DefendantViewProps {
   onSaveConsultation: (title: string, query: string, result: string, type: 'defendant') => void;
@@ -54,6 +55,19 @@ export const DefendantView: React.FC<DefendantViewProps> = ({ onSaveConsultation
     onSaveConsultation(caseDetails.slice(0, 45) + '...', caseDetails, analysisResult, 'defendant');
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handlePrintPdf = () => {
+    if (!analysisResult) return;
+    const dummyItem = {
+      id: Date.now().toString(),
+      type: 'defendant' as const,
+      title: 'استراتيجية ودفوع الدفاع القانوني',
+      query: caseDetails,
+      result: analysisResult,
+      date: new Date().toLocaleDateString('ar-EG'),
+    };
+    triggerPrintDocument([dummyItem], 'تقرير استراتيجية الدفاع');
   };
 
   return (
@@ -137,7 +151,15 @@ export const DefendantView: React.FC<DefendantViewProps> = ({ onSaveConsultation
                 <ShieldCheck className="w-5 h-5" />
                 <span>تقرير استراتيجية الدفاع القانوني</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={handlePrintPdf}
+                  title="طباعة أو تصدير التقرير كملف PDF منسق"
+                  className="flex items-center gap-1.5 text-xs bg-[#1A1A1A] hover:bg-[#2A2A2A] text-[#C5A059] border border-[#C5A059]/40 hover:border-[#C5A059] px-3 py-1.5 rounded-lg transition font-medium"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>تصدير PDF</span>
+                </button>
                 <button
                   onClick={handleCopy}
                   className="flex items-center gap-1.5 text-xs bg-[#1A1A1A] hover:bg-[#2A2A2A] text-gray-300 border border-[#333333] px-3 py-1.5 rounded-lg transition"

@@ -1,1 +1,230 @@
 @import "tailwindcss";
+
+/* =========================================================================
+   وضع القراءة المريحة (Comfortable Light Reading Mode) & Legal Typography
+   ========================================================================= */
+
+/* Root light mode overrides for comfortable legal reading */
+html.light-mode,
+.light-mode {
+  color-scheme: light;
+  background-color: #FBF9F5 !important;
+  color: #1C1917 !important;
+}
+
+/* Background overrides in light mode */
+.light-mode .bg-\[\#0A0A0A\],
+.light-mode.bg-\[\#0A0A0A\],
+.light-mode .bg-\[\#0C0C0C\] {
+  background-color: #FBF9F5 !important;
+}
+
+.light-mode .bg-\[\#0F0F0F\] {
+  background-color: #F3EFE6 !important;
+}
+
+.light-mode .bg-\[\#121212\] {
+  background-color: #F7F4EC !important;
+}
+
+.light-mode .bg-\[\#141414\] {
+  background-color: #FFFFFF !important;
+}
+
+.light-mode .bg-\[\#17140F\] {
+  background-color: #F9F5EC !important;
+}
+
+.light-mode .bg-\[\#181818\] {
+  background-color: #F6F2E9 !important;
+}
+
+.light-mode .bg-\[\#1A1A1A\] {
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 4px rgba(44, 34, 20, 0.04) !important;
+}
+
+.light-mode .bg-\[\#1C1C1C\],
+.light-mode .bg-\[\#1E1E1E\],
+.light-mode .bg-\[\#202020\] {
+  background-color: #F8F5EE !important;
+}
+
+.light-mode .bg-\[\#1F1F1F\] {
+  background-color: #FFFFFF !important;
+}
+
+.light-mode .bg-\[\#222222\] {
+  background-color: #F1ECE2 !important;
+}
+
+.light-mode .bg-\[\#242424\],
+.light-mode .bg-\[\#252525\],
+.light-mode .bg-\[\#262626\],
+.light-mode .bg-\[\#282828\],
+.light-mode .bg-\[\#2A2A2A\],
+.light-mode .bg-\[\#303030\] {
+  background-color: #E8E2D5 !important;
+}
+
+/* Hover background states in light mode */
+.light-mode .hover\:bg-\[\#1A1A1A\]:hover {
+  background-color: #EDE7DC !important;
+}
+
+.light-mode .hover\:bg-\[\#222222\]:hover {
+  background-color: #E7E1D3 !important;
+}
+
+.light-mode .hover\:bg-\[\#242424\]:hover,
+.light-mode .hover\:bg-\[\#262626\]:hover,
+.light-mode .hover\:bg-\[\#2A2A2A\]:hover {
+  background-color: #DFD7C6 !important;
+}
+
+/* Border overrides in light mode */
+.light-mode .border-\[\#222222\] {
+  border-color: #E2DBD0 !important;
+}
+
+.light-mode .border-\[\#242424\],
+.light-mode .border-\[\#262626\],
+.light-mode .border-\[\#2A2A2A\],
+.light-mode .border-\[\#2B2B2B\],
+.light-mode .border-\[\#2E2E2E\] {
+  border-color: #DDD4C7 !important;
+}
+
+.light-mode .border-\[\#333333\] {
+  border-color: #D3C8B7 !important;
+}
+
+.light-mode .border-\[\#3E3E3E\] {
+  border-color: #C8BCAB !important;
+}
+
+/* Text color overrides for high legibility on light background */
+.light-mode .text-white {
+  color: #1C1917 !important;
+}
+
+.light-mode .text-gray-100 {
+  color: #1C1917 !important;
+}
+
+.light-mode .text-gray-200 {
+  color: #292524 !important;
+}
+
+.light-mode .text-gray-300 {
+  color: #44403C !important;
+}
+
+.light-mode .text-gray-400 {
+  color: #57534E !important;
+}
+
+.light-mode .text-gray-500 {
+  color: #78716C !important;
+}
+
+/* Egyptian Legal Bronze Gold color adaptation in light mode */
+.light-mode .text-\[\#C5A059\] {
+  color: #93631A !important;
+}
+
+.light-mode .bg-\[\#C5A059\] {
+  background-color: #93631A !important;
+  color: #FFFFFF !important;
+}
+
+.light-mode .border-\[\#C5A059\] {
+  border-color: #93631A !important;
+}
+
+.light-mode .bg-\[\#C5A059\]\/10,
+.light-mode .bg-\[\#C5A059\]\/15 {
+  background-color: rgba(147, 99, 26, 0.12) !important;
+}
+
+.light-mode .border-\[\#C5A059\]\/20,
+.light-mode .border-\[\#C5A059\]\/30,
+.light-mode .border-\[\#C5A059\]\/40,
+.light-mode .border-\[\#C5A059\]\/50 {
+  border-color: rgba(147, 99, 26, 0.35) !important;
+}
+
+/* Chat bubble styling adjustments in light mode */
+.light-mode .user-chat-bubble {
+  background-color: #EFEAE0 !important;
+  color: #1C1917 !important;
+  border-color: #DDD4C7 !important;
+}
+
+.light-mode .ai-chat-bubble {
+  background-color: #FFFFFF !important;
+  color: #292524 !important;
+  border-color: #E2DBD0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Inputs in light mode */
+.light-mode input,
+.light-mode textarea,
+.light-mode select {
+  background-color: #FFFFFF !important;
+  color: #1C1917 !important;
+  border-color: #D3C8B7 !important;
+}
+
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #8C8273 !important;
+}
+
+.light-mode input:focus,
+.light-mode textarea:focus {
+  border-color: #93631A !important;
+  box-shadow: 0 0 0 1px #93631A !important;
+}
+
+/* Font size scalability for comfortable legal reading */
+.reading-size-large p,
+.reading-size-large .legal-reading-text,
+.reading-size-large .whitespace-pre-wrap {
+  font-size: 1.075rem !important;
+}
+
+.reading-size-xlarge p,
+.reading-size-xlarge .legal-reading-text,
+.reading-size-xlarge .whitespace-pre-wrap {
+  font-size: 1.2rem !important;
+}
+
+/* Line height scalability */
+.reading-line-relaxed p,
+.reading-line-relaxed .legal-reading-text,
+.reading-line-relaxed .whitespace-pre-wrap {
+  line-height: 1.85 !important;
+}
+
+.reading-line-loose p,
+.reading-line-loose .legal-reading-text,
+.reading-line-loose .whitespace-pre-wrap {
+  line-height: 2.2 !important;
+}
+
+/* High contrast mode enhancements */
+.high-contrast-mode {
+  --contrast-border: #998B75;
+}
+
+.high-contrast-mode * {
+  font-weight: 500;
+}
+
+.high-contrast-mode .border-\[\#222222\],
+.high-contrast-mode .border-\[\#333333\],
+.high-contrast-mode .border-\[\#2B2B2B\] {
+  border-width: 1.5px !important;
+}

@@ -1,4 +1,10 @@
-import { SavedItem } from '../types';
+import { SavedItem, CourtSession } from '../types';
+import {
+  calculateTimeRemaining,
+  formatArabicDate,
+  getCountdownLabel,
+} from './sessionUtils';
+import { formatLeadHoursText } from './notificationUtils';
 
 /**
  * Downloads a string content as a file with UTF-8 BOM for perfect Arabic display in Notepad & text editors.
@@ -62,6 +68,109 @@ ${item.result}
 ======================================================================
 تم التصدير عبر منصة: المحامي الذكي | Smart Lawyer
 `;
+};
+
+/**
+ * Generates structured, professional plain text for a single court session
+ * containing all details, court dates, notes, judgment reservation details,
+ * and complete case history/timeline for printing or sharing.
+ */
+export const formatSingleSessionTxt = (session: CourtSession): string => {
+  const exportDate = new Date().toLocaleDateString('ar-EG', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const exportTime = new Date().toLocaleTimeString('ar-EG', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const timeRem = calculateTimeRemaining(session.sessionDate, session.sessionTime);
+  const countdownText = getCountdownLabel(timeRem);
+  const formattedDate = formatArabicDate(session.sessionDate);
+
+  let out = `======================================================================
+بطاقة بيانات جلسة قضائية - منصة المحامي الذكي
+وفقاً لإجراءات التقاضي ومواعيد المحاكم المصرية
+======================================================================
+تاريخ الاستخراج: ${exportDate} - الساعة ${exportTime}
+معرّف الجلسة: #${session.id.slice(-8)}
+حالة الجلسة: ${session.isCompleted ? 'جلسة منتهية / تم الفصل فيها' : 'جلسة سارية ومجدولة'}
+
+----------------------------------------------------------------------
+[ أولاً: البيانات الأساسية للدعوى والجلسة ]
+----------------------------------------------------------------------
+• موضوع الدعوى: ${session.caseTitle}
+• رقم الدعوى / القيد: ${session.caseNumber || 'غير مدون'}
+• المحكمة والدائرة: ${session.courtName}
+• نوع وطبيعة الجلسة: ${session.sessionType}
+• تاريخ انعقاد الجلسة: ${formattedDate} (${session.sessionDate})
+• توقيت انعقاد الجلسة: الساعة ${session.sessionTime || '09:30'} صباحاً
+• الموقف الزمني المتبقي: ${countdownText}
+`;
+
+  if (session.isReservedForJudgment) {
+    out += `
+----------------------------------------------------------------------
+[ ثانياً: بيانات حجز الدعوى للحكم والمهل القانونية ]
+----------------------------------------------------------------------
+• الموقف القضائي: محجوزة للحكم ⚖️
+• تاريخ جلسة النطق بالحكم: ${session.judgmentDate ? formatArabicDate(session.judgmentDate) : 'محدد بالجلسة'}
+• آخر موعد لتقديم المذكرات المصرح بها: ${session.briefsDeadline ? formatArabicDate(session.briefsDeadline) : 'لم يُحدد أجل مذكرات'}
+• منطوق الحكم / ملخص قرار الحجز: ${session.judgmentNotes || 'قيد المداولة والنطق'}
+`;
+  }
+
+  if (session.postponementReason) {
+    out += `
+----------------------------------------------------------------------
+[ ${session.isReservedForJudgment ? 'ثالثاً' : 'ثانياً'}: آخر قرار صادر من المحكمة ]
+----------------------------------------------------------------------
+• منطوق قرار التأجيل / المحكمة: ${session.postponementReason}
+• إجمالي مرات الترحيل والتأجيل: ${session.rolloverCount || (session.history ? session.history.length : 0)} مرات
+`;
+  }
+
+  out += `
+----------------------------------------------------------------------
+[ ${session.isReservedForJudgment && session.postponementReason ? 'رابعاً' : session.isReservedForJudgment || session.postponementReason ? 'ثالثاً' : 'ثانياً'}: المطلوب بالجلسة والملاحظات المهنية ]
+----------------------------------------------------------------------
+${session.notes?.trim() ? session.notes.trim() : 'لا توجد طلبات أو ملاحظات إضافية مسجلة لهذه الجلسة.'}
+
+----------------------------------------------------------------------
+[ إعدادات التنبيه المسبق ]
+----------------------------------------------------------------------
+• حالة التنبيه الآلي: ${session.reminderEnabled !== false ? `مفعل مسبقاً (${formatLeadHoursText(session.reminderLeadHours ?? 24)})` : 'غير مفعل'}
+• الإشعار الأخير: ${session.lastNotifiedAt ? 'تم إرسال إشعار التذكير بنجاح' : 'بانتظار حلول موعد التنبيه المسبق'}
+`;
+
+  if (session.history && session.history.length > 0) {
+    out += `
+----------------------------------------------------------------------
+[ رول الجلسات المتعاقبة والقرارات السابقة (سجل تاريخ الدعوى) ]
+----------------------------------------------------------------------
+`;
+    session.history.forEach((h, idx) => {
+      out += `(${idx + 1}) جلسة: ${formatArabicDate(h.previousDate)}
+    - القرار الصادر: ${h.decisionType}
+    - سبب / تفاصيل القرار: ${h.decisionReason}
+    ${h.nextSessionDate ? `- أُجلت إلى: ${formatArabicDate(h.nextSessionDate)}\n    ` : ''}${h.briefsDeadline ? `- مهلة المذكرات المصرح بها: حتى ${formatArabicDate(h.briefsDeadline)}\n    ` : ''}${h.verdictText ? `- منطوق الحكم: ${h.verdictText}\n    ` : ''}${h.previousNotes ? `- الملاحظات السابقة: ${h.previousNotes}\n    ` : ''}
+`;
+    });
+  }
+
+  out += `
+======================================================================
+إرشادات المحامي الذكي:
+• يُرجى التحقق من رول الدائرة بمقر المحكمة صبيحة يوم الانعقاد للتأكد من ترتيب نظر الدعوى.
+• احرص على تقديم المذكرات وحوافظ المستندات خلال المواعيد المقررة قانوناً.
+======================================================================
+تم الاستخراج عبر منصة: المحامي الذكي | Smart Lawyer
+`;
+
+  return out;
 };
 
 /**

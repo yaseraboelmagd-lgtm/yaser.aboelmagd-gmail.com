@@ -17,18 +17,22 @@ import {
   AlertTriangle,
   CheckCircle2,
   Calendar,
+  RotateCw,
+  Scale,
 } from 'lucide-react';
 
 interface SessionCountdownBannerProps {
   sessions: CourtSession[];
   onOpenSessionsModal: () => void;
   onAddNewSession: () => void;
+  onOpenRollover?: (sessionId?: string) => void;
 }
 
 export const SessionCountdownBanner: React.FC<SessionCountdownBannerProps> = ({
   sessions,
   onOpenSessionsModal,
   onAddNewSession,
+  onOpenRollover,
 }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [nowTick, setNowTick] = useState(Date.now());
@@ -42,7 +46,7 @@ export const SessionCountdownBanner: React.FC<SessionCountdownBannerProps> = ({
   }, []);
 
   // Filter active and upcoming
-  const activeSessions = sessions.filter((s) => !s.isCompleted);
+  const activeSessions = (sessions || []).filter((s) => !s.isCompleted);
 
   // Find closest upcoming session
   const closestSession = (() => {
@@ -156,9 +160,20 @@ export const SessionCountdownBanner: React.FC<SessionCountdownBannerProps> = ({
                 <span>تنبيه موعد الجلسة القادمة</span>
               </span>
               <span className="text-gray-600 text-[10px]">•</span>
-              <span className="bg-[#242424] text-gray-300 text-[10px] px-2 py-0.5 rounded-full border border-[#333333]">
-                {closestSession.sessionType}
-              </span>
+              {closestSession.isReservedForJudgment ? (
+                <span className="bg-[#C5A059] text-black text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                  <span>⚖️ محجوزة للحكم</span>
+                </span>
+              ) : (
+                <span className="bg-[#242424] text-gray-300 text-[10px] px-2 py-0.5 rounded-full border border-[#333333]">
+                  {closestSession.sessionType}
+                </span>
+              )}
+              {closestSession.briefsDeadline && (
+                <span className="bg-amber-950/70 border border-amber-600/70 text-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                  مهلة المذكرات: {formatArabicDate(closestSession.briefsDeadline)}
+                </span>
+              )}
               {closestSession.caseNumber && (
                 <span className="text-[11px] text-gray-400 hidden sm:inline">
                   {closestSession.caseNumber}
@@ -238,6 +253,16 @@ export const SessionCountdownBanner: React.FC<SessionCountdownBannerProps> = ({
 
           {/* Action Buttons */}
           <div className="flex items-center gap-1.5">
+            {timeRem.isPast && onOpenRollover && (
+              <button
+                onClick={() => onOpenRollover(closestSession.id)}
+                className="text-xs px-2.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg transition flex items-center gap-1 cursor-pointer shadow-md"
+                title="ترحيل هذه الجلسة المنقضية وإثبات قرار المحكمة"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+                <span>ترحيل الجلسة</span>
+              </button>
+            )}
             <button
               onClick={onOpenSessionsModal}
               className="text-xs px-3 py-1.5 bg-[#1E1E1E] hover:bg-[#282828] text-gray-200 hover:text-white border border-[#333333] hover:border-[#C5A059]/50 rounded-lg transition font-medium cursor-pointer"

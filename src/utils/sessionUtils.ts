@@ -153,7 +153,7 @@ export const formatArabicDate = (dateStr: string): string => {
  * Sorts sessions and finds the closest non-completed upcoming session.
  */
 export const getClosestUpcomingSession = (sessions: CourtSession[]): CourtSession | null => {
-  const activeSessions = sessions.filter((s) => !s.isCompleted);
+  const activeSessions = (sessions || []).filter((s) => !s.isCompleted);
   if (activeSessions.length === 0) return null;
 
   const now = new Date();
@@ -196,6 +196,16 @@ export const getDefaultSampleSessions = (): CourtSession[] => {
   session2Date.setDate(today.getDate() + 8);
   const session2Str = session2Date.toISOString().split('T')[0];
 
+  // Briefs deadline: 4 days from now
+  const briefDate = new Date(today);
+  briefDate.setDate(today.getDate() + 4);
+  const briefDateStr = briefDate.toISOString().split('T')[0];
+
+  // Past session date (10 days ago for previous history)
+  const prevDate = new Date(today);
+  prevDate.setDate(today.getDate() - 10);
+  const prevDateStr = prevDate.toISOString().split('T')[0];
+
   return [
     {
       id: 'demo-1',
@@ -205,9 +215,23 @@ export const getDefaultSampleSessions = (): CourtSession[] => {
       sessionDate: session1Str,
       sessionTime: '09:30',
       sessionType: 'مرافعة',
-      notes: 'تقديم أصل عقد البيع الابتدائي وإعلان الخصوم بورقة التكليف بالحضور.',
+      notes: 'تقديم أصل عقد البيع الابتدائي وحافظة المستندات وإعلان الخصوم.',
       isCompleted: false,
       createdAt: new Date().toISOString(),
+      rolloverCount: 1,
+      postponementReason: 'التأجيل لتقديم أصل عقد البيع المسجل وإعلان شواهد التزوير',
+      history: [
+        {
+          id: 'hist-demo-1',
+          previousDate: prevDateStr,
+          previousTime: '09:30',
+          decisionDate: new Date().toISOString(),
+          decisionType: 'تأجيل',
+          decisionReason: 'التأجيل لتقديم أصل عقد البيع المسجل وإعلان شواهد التزوير',
+          nextSessionDate: session1Str,
+          previousNotes: 'جلسة أولى لورود الصحيفة وإعلان المدعى عليه',
+        },
+      ],
     },
     {
       id: 'demo-2',
@@ -217,9 +241,27 @@ export const getDefaultSampleSessions = (): CourtSession[] => {
       sessionDate: session2Str,
       sessionTime: '10:00',
       sessionType: 'نطق بالحكم',
-      notes: 'جلسة حجز الدعوى للحكم مع التصريح بمذكرات الدفاع خلال أسبوع.',
+      notes: 'حجزت للحكم مع التصريح بمذكرات الدفاع الختامية وإيداع تقرير المحاسب.',
       isCompleted: false,
+      isReservedForJudgment: true,
+      judgmentDate: session2Str,
+      briefsDeadline: briefDateStr,
+      postponementReason: 'حجز الدعوى للنطق بالحكم مع التصريح بمذكرات دفاع ومستندات خلال أسبوعين',
       createdAt: new Date().toISOString(),
+      rolloverCount: 1,
+      history: [
+        {
+          id: 'hist-demo-2',
+          previousDate: prevDateStr,
+          previousTime: '10:00',
+          decisionDate: new Date().toISOString(),
+          decisionType: 'حجز للحكم',
+          decisionReason: 'حجز الدعوى للنطق بالحكم مع التصريح بمذكرات دفاع ومستندات تبادل بين الخصوم',
+          nextSessionDate: session2Str,
+          briefsDeadline: briefDateStr,
+          previousNotes: 'المرافعة الختامية وسماع مرافعة الدفاع عن المتهم',
+        },
+      ],
     },
   ];
 };
